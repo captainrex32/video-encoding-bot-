@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: video-encoder-bot
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: API_ID
+        sync: false
+      - key: API_HASH
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: SUDO_USERS
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: 1
