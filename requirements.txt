@@ -1,7 +1,7 @@
 pyrogram==2.0.106
 tgcrypto==1.2.5
 python-dotenv==1.0.1
-ffmpeg-python==0.2. Ricci
+ffmpeg-python==0.2.0
 
 **File 3: main.py**
 ```python
