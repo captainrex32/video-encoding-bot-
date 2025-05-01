@@ -1,0 +1,6 @@
+_pycache_/
+*.pyc
+config.env
+downloads/
+encoded/
+ffmpeg_custom.txt
