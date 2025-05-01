@@ -78,5 +78,5 @@ async def handle_video(client, message: Message):
         await message.reply_text("An error occurred while processing your video.")
 
 # Run the bot
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run()
