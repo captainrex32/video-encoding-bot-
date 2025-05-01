@@ -34,4 +34,4 @@ A Telegram bot that encodes videos using FFmpeg. Deploy it on Render to encode v
 - Only you (the admin) can set custom FFmpeg commands.
 
 ## License
-MIT
+MIT...
