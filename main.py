@@ -1,9 +1,26 @@
 import os
+import time
+import threading
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 import logging
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from dotenv import load_dotenv
 from ffmpeg_utils import encode_video
+
+# Dummy port binding to satisfy Render
+class DummyHandler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.w_close()
+
+port = int(os.getenv("PORT", 5000))
+server = HTTPServer(("0.0.0.0", port), DummyHandler)
+server_thread = threading.Thread(target=server.serve_forever)
+server_thread.daemon = True
+server_thread.start()
 
 # Load environment variables
 load_dotenv()
@@ -39,9 +56,9 @@ async def set_code(client, message: Message):
         custom_code = " ".join(message.command[1:])
         with open("ffmpeg_custom.txt", "w") as f:
             f.write(custom_code)
-        await message.reply_text(f"Custom FFmpeg code set: {custom_code}")
+        await message.reply_text(f"Custom FFmpeg code set: `{custom_code}`")
     else:
-        await message.reply_text("Please provide an FFmpeg command. Example: /setcode -c:v libx264 -crf 23 -preset fast")
+        await message.reply_text("Please provide an FFmpeg command. Example: /setcode c:v libx264 crf 23 preset fast")
 
 # Handle video uploads
 @app.on_message(filters.video & filters.private)
