@@ -1,0 +1,89 @@
+pyrogram==2.0.106
+tgcrypto==1.2.5
+python-dotenv==1.0.1
+ffmpeg-python==0.2. Ricci
+
+**File 3: main.py**
+```python
+import os
+import logging
+from pyrogram import Client, filters
+from pyrogram.types import Message
+from dotenv import load_dotenv
+from ffmpeg_utils import encode_video
+
+# Load environment variables
+load_dotenv()
+
+# Bot configuration
+API_ID = os.getenv("API_ID")
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+SUDO_USERS = [int(uid) for uid in os.getenv("SUDO_USERS", "").split()]
+DOWNLOAD_DIR = os.getenv("DOWNLOAD_DIR", "./downloads")
+ENCODE_DIR = os.getenv("ENCODE_DIR", "./encoded")
+
+# Ensure directories exist
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+os.makedirs(ENCODE_DIR, exist_ok=True)
+
+# Initialize bot
+app = Client("VideoEncoderBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(_name_)
+
+# Start command
+@app.on_message(c.command("start") & c.filters.private)
+async def start(client, message: Message):
+    await message.reply_text("Welcome to the Video Encoder Bot! Send a video to encode, or use /setcode to specify a custom FFmpeg command.")
+
+# Set custom FFmpeg code
+@app.on_message(c.command("setcode") & c.filters.private & c.filters.user(SUDO_USERS))
+async def set_code(client, message: Message):
+    if len(message.command) > 1:
+        custom_code = " ".join(message.command[1:])
+        with open("ffmpeg_custom.txt", "w") as f:
+            f.write(custom_code)
+        await message.reply_text(f"Custom FFmpeg code set: {custom_code}")
+    else:
+        await message.reply_text("Please provide an FFmpeg command. Example: /setcode -c:v libx264 -crf 23 -preset fast")
+
+# Handle video uploads
+@app.on_message(c.filters.video & c.filters.private)
+async def handle_video(client, message: Message):
+    try:
+        # Download video
+        file_path = await message.download(file_name=os.path.join(DOWNLOAD_DIR, f"{message.video.file_id}.mp4"))
+        output_path = os.path.join(ENCODE_DIR, f"encoded_{message.video.file_id}.mp4")
+
+        # Get custom FFmpeg code or use default
+        ffmpeg_cmd = None
+        if os.path.exists("ffmpeg_custom.txt"):
+            with open("ffmpeg_custom.txt", "r") as f:
+                ffmpeg_cmd = f.read().strip()
+
+        # Encode video
+        await message.reply_text("Encoding your video, please wait...")
+        success, error = encode_video(file_path, output_path, ffmpeg_cmd)
+
+        if success:
+            # Send encoded video
+            await client.send_video(
+                chat_id=message.chat.id,
+                video=output_path,
+                caption="Here is your encoded video!"
+            )
+            # Clean up
+            os.remove(file_path)
+            os.remove(output_path)
+        else:
+            await message.reply_text(f"Encoding failed: {error}")
+    except Exception as e:
+        logger.error(f"Error processing video: {e}")
+        await message.reply_text("An error occurred while processing your video.")
+
+# Run the bot
+if _name_ == "_main_":
+    app.run()
