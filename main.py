@@ -25,7 +25,7 @@ app = Client("VideoEncoderBot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(_name_)
+logger = logging.getLogger(__name__)
 
 # Start command
 @app.on_message(filters.command("start") & filters.private)
