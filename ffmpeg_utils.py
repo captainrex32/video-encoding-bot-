@@ -1,7 +1,7 @@
 import ffmpeg
 import logging
 
-logger = logging.getLogger(_name_)
+logger = logging.getLogger(__name__)
 
 def encode_video(input_path: str, output_path: str, custom_cmd: str = None) -> tuple[bool, str]:
     try:
