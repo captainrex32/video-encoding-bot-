@@ -26,3 +26,7 @@ A Telegram bot that encodes videos using FFmpeg. Deploy it on Render to encode v
 
 ## License
 MIT
+
+## Features
+- Custom encoding
+- more features soon..
