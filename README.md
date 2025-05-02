@@ -2,6 +2,10 @@
 
 A Telegram bot that encodes videos using FFmpeg. Deploy it on Render to encode videos with default or custom settings. 
 
+<p align="center">
+  
+  <img src="https://te.legra.ph/file/3fa3f92c9eebf852adf1a.jpg" alt="Lagatha" width="600" height="400">"
+
 ## How to Set Up
 1.  *Deploy to Render*:
    - Sign up at https://render.com.
